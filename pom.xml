@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.doda25team12</groupId>   <!-- team id -->
+    <artifactId>lib-version</artifactId>  <!-- project name -->
+    <version>1.0.0</version>              <!-- current library version -->
+    <packaging>jar</packaging>            <!-- packaging type (Java JAR) -->
+
+    <name>lib-version</name>
+    <description>Version-aware library for the SMS Checker app</description>
+
+    <properties>
+        <!-- JDK Version -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <!-- Tell Maven the package version -->
+    <build>
+        <plugins>
+            <!-- Plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+
+                <!-- Write version number into MANIFEST.MF -->
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
