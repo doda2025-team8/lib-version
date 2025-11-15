@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.doda25team12</groupId>   <!-- team id -->
+    <groupId>doda25team8</groupId>   <!-- team id -->
     <artifactId>lib-version</artifactId>  <!-- project name -->
     <version>1.0.0</version>              <!-- current library version -->
     <packaging>jar</packaging>            <!-- packaging type (Java JAR) -->
