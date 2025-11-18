@@ -3,11 +3,7 @@ name: Release lib-version to GitHub Packages
 on:
   push:
     tags:
-      - 'v*'            # add a tag like v1.0.0 to trigger: when pushing such a tag(v1.0.0), this workflow runs
-
-permissions:
-  contents: read
-  packages: write
+      - 'v[0-9]+.[0-9]+.[0-9]+'  
 
 jobs:
   publish:
@@ -15,22 +11,21 @@ jobs:
 
     permissions:
       contents: read
-      packages: write 
+      packages: write
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-          server-id: github 
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
+          cache: 'maven'
+          server-id: github  
+          server-username: ${{ github.actor }}
+          server-password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish to GitHub Packages
         run: mvn -B deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
