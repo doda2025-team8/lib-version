@@ -23,9 +23,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-          server-id: github  
+          server-id: github
           server-username: ${{ github.actor }}
-          server-password: ${{ secrets.GITHUB_TOKEN }}
+          server-password: ${{ secrets.GH_TOKEN }}
+
 
       - name: Build and publish to GitHub Packages
         run: mvn -B deploy
