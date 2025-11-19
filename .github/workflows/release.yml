@@ -24,8 +24,8 @@ jobs:
           java-version: '17'
           cache: 'maven'
           server-id: github
-          server-username: ${{ github.actor }}
-          server-password: ${{ github.token }}
+          server-username: ${{ secrets.GH_USERNAME }}
+          server-password: ${{ secrets.GH_TOKEN }}
 
 
       - name: Build and publish to GitHub Packages
