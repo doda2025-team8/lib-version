@@ -20,12 +20,12 @@ Configure GitHub Packages in your pom.xml:
 AND add the dependency:
 ```xml
 <dependency>
-    <groupId>com.yourteam</groupId>
+    <groupId>doda25team8</groupId>
     <artifactId>lib-version</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
-The ```<verion>x.x.x<version>``` is the current official lib version
+The ```<version>x.x.x<version>``` is the current official lib version
 
 -----------------------------------
 Usage
