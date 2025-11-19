@@ -25,7 +25,7 @@ AND add the dependency:
     <version>1.0.0</version>
 </dependency>
 ```
-The ```<verion>x.x.x<version>``` is the current official number
+The ```<verion>x.x.x<version>``` is the current official lib version
 
 -----------------------------------
 Usage
