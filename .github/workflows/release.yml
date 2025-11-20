@@ -3,32 +3,33 @@ name: Release lib-version to GitHub Packages
 on:
   push:
     tags:
-      - 'v*'            # add a tag like v1.0.0 to trigger
-
-permissions:
-  contents: read
-  packages: write
+      - 'v[0-9]+.[0-9]+.[0-9]+'  
 
 jobs:
-  release:
+  publish:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+    env:
+      MAVEN_USERNAME: ${{ github.actor }}
+      MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-          # give the mvn access to publish to GitHub Packages
           server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
 
-      - name: Extract version from tag
-        id: v
-        run: |
-          RAW="${GITHUB_REF_NAME}"         # e.g. v1.0.0
-          echo "version=${RAW#v}" >> $GITHUB_OUTPUT
+
+      - name: Build and publish to GitHub Packages
+        run: mvn -B deploy
