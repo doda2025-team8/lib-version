@@ -2,14 +2,12 @@ name: Release Lib Version
 on:
   push:
     branches: ["main"]
-  # pull_request:
-  #   branches: ["main"]
 
 jobs:
   release:
     runs-on: ubuntu-24.04
     permissions:
-      contents: write #change to write to edit patch of version(v0.0.1-SNAPSHOT -> v0.0.1 offcially releasing)
+      contents: write
       packages: write
     steps:
       - name: Checkout code
@@ -17,16 +15,27 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN_FINAL }}
         
-      - name: Set up Java/Maven Environment #need a Maven environment to use "versions:set"
+      - name: Set up Java/Maven Environment
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-          server-id: github
-          server-username: github-actions
-          server-password: ${{ secrets.PAT_TOKEN_FINAL  }}
 
+      - name: Create settings.xml
+        run: |
+          echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\" \
+          xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
+          xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 \
+          https://maven.apache.org/xsd/settings-1.0.0.xsd\"> \
+            <servers> \
+              <server> \
+                <id>github</id> \
+                <username>github-actions</username> \
+                <password>\${env.GITHUB_TOKEN}</password> \
+              </server> \
+            </servers> \
+          </settings>" > settings.xml
 
       - name: Extract version from pom.xml
         id: extract_version
@@ -51,9 +60,9 @@ jobs:
           mvn versions:set -DnewVersion=${{ env.VERSION_BASE }} -B
 
       - name: Deploy to GitHub Packages
-        run: mvn -B deploy
+        run: mvn -B deploy -s settings.xml
         env:
-          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release Tag
         run: |
@@ -73,7 +82,5 @@ jobs:
           
           git add pom.xml
           git commit -m "chore(release): Bump version to $NEXT_VERSION after stable release [skip ci]."
-          git push origin HEAD:main
 
-      - name: Deploy to GitHub Packages
-        run: mvn -B deploy
+          git push origin HEAD:main
