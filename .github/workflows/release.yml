@@ -2,8 +2,6 @@ name: Release Lib Version
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
 
 jobs:
   release:
