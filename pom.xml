@@ -20,11 +20,6 @@
             <name>GitHub Packages</name>
             <url>https://maven.pkg.github.com/doda2025-team8/lib-version</url>
         </repository>
-        <snapshotRepository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/doda2025-team8/lib-version</url>
-        </snapshotRepository>
     </distributionManagement>
 
 
