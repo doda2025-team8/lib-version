@@ -1,35 +1,92 @@
-name: Release lib-version to GitHub Packages
-
+name: Release Lib Version
 on:
   push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'  
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-
+  release:
+    runs-on: ubuntu-24.04
     permissions:
-      contents: read
+      contents: write
       packages: write
-    env:
-      MAVEN_USERNAME: ${{ github.actor }}
-      MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
-      - name: Checkout source
+      - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up Java
+        with:
+          token: ${{ secrets.PAT_TOKEN_FINAL }}
+        
+      - name: Set up Java/Maven Environment
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
-          server-id: github
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
+          distribution: 'temurin'
+          cache: maven
 
+      - name: Create settings.xml
+        run: |
+          echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\" \
+          xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
+          xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 \
+          https://maven.apache.org/xsd/settings-1.0.0.xsd\"> \
+            <servers> \
+              <server> \
+                <id>github</id> \
+                <username>github-actions</username> \
+                <password>\${env.GITHUB_TOKEN}</password> \
+              </server> \
+            </servers> \
+          </settings>" > settings.xml
 
-      - name: Build and publish to GitHub Packages
-        run: mvn -B deploy
+      - name: Extract version from pom.xml
+        id: extract_version
+        run: |
+          FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          VERSION_BASE=$(echo $FULL_VERSION | sed 's/-SNAPSHOT//')
+          MAJOR=$(echo "$VERSION_BASE" | cut -d . -f 1)
+          MINOR=$(echo "$VERSION_BASE" | cut -d . -f 2)
+          PATCH=$(echo "$VERSION_BASE" | cut -d . -f 3)
+
+          echo "Current SNAPSHOT version: $FULL_VERSION"
+          echo "Releasing version: $VERSION_BASE"
+
+          echo "VERSION_BASE=$VERSION_BASE" >> $GITHUB_ENV
+          echo "VERSION_FULL=$FULL_VERSION" >> $GITHUB_ENV
+          echo "version_major=$MAJOR" >> $GITHUB_ENV
+          echo "version_minor=$MINOR" >> $GITHUB_ENV
+          echo "version_patch=$PATCH" >> $GITHUB_ENV
+
+      - name: Set stable version
+        run: |
+          mvn versions:set -DnewVersion=${{ env.VERSION_BASE }} -B
+
+      - name: Deploy to GitHub Packages
+        run: mvn -B deploy -s settings.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release Tag
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+          git tag v${{ env.VERSION_BASE }}
+          git push origin "v${{ env.VERSION_BASE }}"
+
+      - name: Bump version to next snapshot after build and push
+        run: |
+          NEW_PATCH=$(( ${{env.version_patch}} + 1 ))
+          NEXT_VERSION="${{env.version_major}}.${{env.version_minor}}.${NEW_PATCH}-SNAPSHOT"
+
+          echo "Bumping from ${{env.VERSION_BASE}} to $NEXT_VERSION"
+          
+          git fetch origin main
+          git checkout -B main origin/main -f
+
+          mvn versions:set -DnewVersion=$NEXT_VERSION -B
+          
+          git add pom.xml
+          git commit -m "chore(release): Bump version to $NEXT_VERSION after stable release [skip ci]"
+
+          git push origin main
