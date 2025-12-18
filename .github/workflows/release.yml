@@ -24,7 +24,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: github
-          server-username: rexdodo
+          server-username: github-actions
           server-password: ${{ secrets.PAT_TOKEN_FINAL  }}
 
 
