@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN_FINAL }}
         
       - name: Set up Java/Maven Environment #need a Maven environment to use "versions:set"
         uses: actions/setup-java@v4
