@@ -24,16 +24,14 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: github
-          server-username: ${{ github.actor }}
+          server-username: rexdodo
           server-password: ${{ secrets.PAT_TOKEN_FINAL  }}
-        
-      - name: Deploy to GitHub Packages
-        run: mvn -B deploy
+
 
       - name: Extract version from pom.xml
         id: extract_version
         run: |
-          FULL_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+          FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           VERSION_BASE=$(echo $FULL_VERSION | sed 's/-SNAPSHOT//')
           MAJOR=$(echo "$VERSION_BASE" | cut -d . -f 1)
           MINOR=$(echo "$VERSION_BASE" | cut -d . -f 2)
@@ -50,7 +48,7 @@ jobs:
 
       - name: Set stable version
         run: |
-          ./mvnw versions:set -DnewVersion=${{ env.VERSION_BASE }} -B
+          mvn versions:set -DnewVersion=${{ env.VERSION_BASE }} -B
 
       - name: Deploy to GitHub Packages
         run: mvn -B deploy
@@ -71,8 +69,11 @@ jobs:
           NEXT_VERSION="${{env.version_major}}.${{env.version_minor}}.${NEW_PATCH}-SNAPSHOT"
 
           echo "Bumping from ${{env.VERSION_BASE}} to $NEXT_VERSION"
-          ./mvnw versions:set -DnewVersion=$NEXT_VERSION -B
+          mvn versions:set -DnewVersion=$NEXT_VERSION -B
           
           git add pom.xml
           git commit -m "chore(release): Bump version to $NEXT_VERSION after stable release [skip ci]."
           git push origin HEAD:main
+
+      - name: Deploy to GitHub Packages
+        run: mvn -B deploy
