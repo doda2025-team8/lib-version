@@ -24,7 +24,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: github
-          settings-path: ${{ github.workspace }}
+          server-username: ${{ github.actor }}
+          server-password: ${{ secrets.PAT_TOKEN_FINAL  }}
+        
+      - name: Deploy to GitHub Packages
+        run: mvn -B deploy
 
       - name: Extract version from pom.xml
         id: extract_version
