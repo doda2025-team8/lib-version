@@ -1,0 +1,47 @@
+name: Pre-release Lib Version
+on:
+  push:
+    branches-ignore:
+      - "main"
+
+jobs:
+  prerelease:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java/Maven Environment
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+          server-id: github
+          settings-path: ${{ github.workspace }}
+
+      - name: Generate unique prerelease version
+        id: prerelease_version
+        run: |
+          FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          VERSION_BASE=$(echo $FULL_VERSION | sed 's/-SNAPSHOT//')
+          
+          BRANCH_NAME=$(echo ${{ github.ref_name }} | sed 's/\//-/g')
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          
+          PRERELEASE_VERSION="${VERSION_BASE}-${BRANCH_NAME}-${TIMESTAMP}"
+          
+          echo "Generated version: $PRERELEASE_VERSION"
+          echo "PRERELEASE_VERSION=$PRERELEASE_VERSION" >> $GITHUB_ENV
+
+      - name: Set prerelease version
+        run: |
+          mvn versions:set -DnewVersion=${{ env.PRERELEASE_VERSION }} -B
+
+      - name: Deploy to GitHub Packages
+        run: mvn -B deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
