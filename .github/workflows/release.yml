@@ -85,4 +85,6 @@ jobs:
           git add pom.xml
           git commit -m "chore(release): Bump version to $NEXT_VERSION after stable release [skip ci]."
 
+          git fetch origin main
+          git rebase origin/main
           git push origin HEAD:main
