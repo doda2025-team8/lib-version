@@ -20,7 +20,7 @@ jobs:
       - name: Set up Java/Maven Environment #need a Maven environment to use "versions:set"
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: '17'
           distribution: 'temurin'
           cache: maven
           server-id: github
