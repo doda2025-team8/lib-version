@@ -17,24 +17,17 @@ jobs:
       - name: Set up Java/Maven Environment
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '25'
           distribution: 'temurin'
           cache: maven
           server-id: github
-          server-username: ${{ secrets.GH_USERNAME }}
+          server-username: ${{ github.actor }}
           server-password: ${{ secrets.PAT_TOKEN_FINAL }}
-
-      - name: Debug Username
-        run: |
-          echo "Username length: ${#GH_USERNAME}"
-          echo "Username starts with: ${GH_USERNAME}"
-        env:
-          GH_USERNAME: ${{ secrets.GH_USERNAME }}
 
       - name: Generate unique prerelease version
         id: prerelease_version
         run: |
-          FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          FULL_VERSION=$(mvn -B help:evaluate -Dexpression=project.version -q -DforceStdout)
           VERSION_BASE=$(echo $FULL_VERSION | cut -d - -f 1)
           
           BRANCH_NAME=$(echo ${{ github.ref_name }} | sed 's/\//-/g')
@@ -51,5 +44,3 @@ jobs:
 
       - name: Deploy to GitHub Packages
         run: mvn -B deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN_FINAL }}
