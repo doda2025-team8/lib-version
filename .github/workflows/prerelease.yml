@@ -24,6 +24,13 @@ jobs:
           server-username: ${{ secrets.GH_USERNAME }}
           server-password: ${{ secrets.PAT_TOKEN_FINAL }}
 
+      - name: Debug Username
+        run: |
+          echo "Username length: ${#GH_USERNAME}"
+          echo "Username starts with: ${GH_USERNAME:0:3}"
+        env:
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+
       - name: Generate unique prerelease version
         id: prerelease_version
         run: |
