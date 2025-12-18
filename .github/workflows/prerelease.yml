@@ -42,5 +42,8 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ env.PRERELEASE_VERSION }} -B
 
+      - name: Check repository context
+        run: echo "This workflow is running in ${{ github.repository }}"
+
       - name: Deploy to GitHub Packages
         run: mvn -B deploy
