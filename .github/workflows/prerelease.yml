@@ -20,8 +20,8 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
           cache: maven
-          server-id: github # Must match the repository id in pom.xml
-          server-password: ${{ secrets.GITHUB_TOKEN }}
+          server-id: ${{ github.actor }}
+          server-password: ${{ secrets.GITHUB_TOKEN   }}
 
       - name: Generate unique prerelease version
         id: prerelease_version
@@ -43,3 +43,5 @@ jobs:
 
       - name: Deploy to GitHub Packages
         run: mvn -B deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
