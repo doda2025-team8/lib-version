@@ -80,11 +80,13 @@ jobs:
           NEXT_VERSION="${{env.version_major}}.${{env.version_minor}}.${NEW_PATCH}-SNAPSHOT"
 
           echo "Bumping from ${{env.VERSION_BASE}} to $NEXT_VERSION"
+          
+          git fetch origin main
+          git checkout -B main origin/main
+
           mvn versions:set -DnewVersion=$NEXT_VERSION -B
           
           git add pom.xml
-          git commit -m "chore(release): Bump version to $NEXT_VERSION after stable release [skip ci]."
+          git commit -m "chore(release): Bump version to $NEXT_VERSION after stable release [skip ci]"
 
-          git fetch origin main
-          git rebase origin/main
-          git push origin HEAD:main
+          git push origin main
