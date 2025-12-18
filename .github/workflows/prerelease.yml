@@ -17,21 +17,22 @@ jobs:
       - name: Set up Java/Maven Environment
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: '17'
           distribution: 'temurin'
           cache: maven
           server-id: github
-          settings-path: ${{ github.workspace }}
+          server-username: ${{ secrets.GH_USERNAME }}
+          server-password: ${{ secrets.PAT_TOKEN_FINAL }}
 
       - name: Generate unique prerelease version
         id: prerelease_version
         run: |
           FULL_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          VERSION_BASE=$(echo $FULL_VERSION | sed 's/-SNAPSHOT//')
+          VERSION_BASE=$(echo $FULL_VERSION | cut -d - -f 1)
           
           BRANCH_NAME=$(echo ${{ github.ref_name }} | sed 's/\//-/g')
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          
+
           PRERELEASE_VERSION="${VERSION_BASE}-${BRANCH_NAME}-${TIMESTAMP}"
           
           echo "Generated version: $PRERELEASE_VERSION"
