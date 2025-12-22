@@ -7,7 +7,7 @@
 
     <groupId>doda2025-team8</groupId>   <!-- team id -->
     <artifactId>lib-version</artifactId>  <!-- project name -->
-    <version>1.0.1-SNAPSHOT</version>              <!-- current library version -->
+    <version>1.0.2-SNAPSHOT</version>              <!-- current library version -->
     <packaging>jar</packaging>            <!-- packaging type (Java JAR) -->
 
     <name>lib-version</name>
