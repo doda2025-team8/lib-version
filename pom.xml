@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>doda25team8</groupId>   <!-- team id -->
+    <groupId>doda2025-team8</groupId>   <!-- team id -->
     <artifactId>lib-version</artifactId>  <!-- project name -->
     <version>1.0.1-SNAPSHOT</version>              <!-- current library version -->
     <packaging>jar</packaging>            <!-- packaging type (Java JAR) -->
@@ -20,6 +20,11 @@
             <name>GitHub Packages</name>
             <url>https://maven.pkg.github.com/doda2025-team8/lib-version</url>
         </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/doda2025-team8/lib-version</url>
+        </snapshotRepository>
     </distributionManagement>
 
 
@@ -32,6 +37,12 @@
 
     <!-- Tell Maven the package version -->
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <!-- Plugins -->
             <plugin>
