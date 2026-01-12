@@ -59,16 +59,20 @@ jobs:
         run: |
           mvn versions:set -DnewVersion=${{ env.VERSION_BASE }} -B
 
+      - name: commit Release Version
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add pom.xml
+          git commit -m "chore(release): Set version to ${{ env.VERSION_BASE }}"
+
       - name: Deploy to GitHub Packages
         run: mvn -B deploy -s settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release Tag
+      - name: Create and Push Release Tag
         run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-
           git tag v${{ env.VERSION_BASE }}
           git push origin "v${{ env.VERSION_BASE }}"
 
